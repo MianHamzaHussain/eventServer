@@ -21,7 +21,6 @@ const createEvent=async (req, res) => {
 const updateEvent=async (req, res) => {
   try {
     const { title, description, start, end, isPublic, guests,id } = req.body;
-    console.log(req.body)
     const event = await Event.findByIdAndUpdate(id, {
       ...(title && { title }),
       ...(description && { description }),
@@ -73,19 +72,19 @@ const deleteEvent=async (req, res) => {
   const getPrivateEvents=async (req, res) => {
     try {
       const userId = req.user._id;
+      const { title, start, end } = req.query;
       const searchQuery = {};
+      
       if (title) {
         searchQuery.title = { $regex: new RegExp(title, 'i') };
       }
       if (start && end) {
         searchQuery.start = { $gte: start, $lte: end };
       }
-      // Find all events where the user is a guest
-      const guestEvents = await Event.find({ guests: userId ,...searchQuery })
+      const guestEvents = await Event.find({ isPublic:false,guests: userId ,...searchQuery })
         .populate('creator', '_id name email')
         .populate('guests', '_id name email')
         .exec();
-      // Find all events where the user is the owner
       const ownerEvents = await Event.find({ creator: userId,...searchQuery })
         .populate('creator', '_id name email')
         .populate('guests', '_id name email')
