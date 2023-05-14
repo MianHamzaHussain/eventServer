@@ -14,8 +14,10 @@ app.use(cors());
 //Routes
 const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/event");
+const userRoutes = require("./routes/user");
 app.use("/api", authRoutes);
 app.use("/api", eventRoutes);
+app.use("/api", userRoutes);
 // Handle 404 errors
 app.use((req, res, next) => {
   const error = new Error("Not found");
